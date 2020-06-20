@@ -36,3 +36,68 @@ Completing the project involves several steps:
 6. Create a CodeBuild stage which will build, test, and deploy your code
 
 For more detail about each of these steps, see the project lesson [here](https://classroom.udacity.com/nanodegrees/nd004/parts/1d842ebf-5b10-4749-9e5e-ef28fe98f173/modules/ac13842f-c841-4c1a-b284-b47899f4613d/lessons/becb2dac-c108-4143-8f6c-11b30413e28d/concepts/092cdb35-28f7-4145-b6e6-6278b8dd7527).
+
+## Steps to run the API locally using the Flask server (no containerization)
+
+The following steps describe how to run the Flask API locally with the standard Flask server, so that you can test endpoints before you containerize the app:
+
+### Install python dependencies. 
+
+These dependencies are kept in a requirements.txt file. To install them, use pip:
+
+```shell
+ pip install -r requirements.txt
+```
+
+### Set up the environment. 
+
+You do not need to create an env_file to run locally but you do need the following two variables available in your terminal environment.
+
+The following environment variable is required:
+
+ * JWT_SECRET - The secret used to make the JWT, for the purpose of this course the secret can be any string.
+
+ * LOG_LEVEL - The level of logging. This will default to 'INFO', but when debugging an app locally, you may want to set it to 'DEBUG'. To add these to your terminal environment, run the 2 lines below.
+
+ Example:
+
+```shell
+ export JWT_SECRET='myjwtsecret'
+ export LOG_LEVEL=DEBUG
+```
+
+
+### Run the app
+
+Run the app using the Flask server, from the top directory, run:
+
+```shell
+ python main.py
+```
+
+### Try the API endpoints
+
+Open a new shell and run the following commands, replacing <EMAIL> and <PASSWORD> with any values.
+
+To try the `/auth` endpoint, use the following command:
+
+```shell
+export URL=localhost:8080
+export TOKEN=`curl -d '{"email":"test@test.com","password":"test"}' -H "Content-Type: application/json" -X POST $URL/auth  | jq -r '.token'`
+```
+
+This calls the endpoint `localhost:8080/auth` with the `{"email":"<EMAIL>","password":"<PASSWORD>"} ` as the message body.
+
+The return value is a JWT token based on the secret you supplied. We are assigning that secret to the environment variable 'TOKEN'. To see the JWT token, run:
+
+```shell
+echo $TOKEN
+```
+
+To try the `/contents` endpoint which decrypts the token and returns its content, run:
+
+```shell
+curl --request GET $URL/contents -H "Authorization: Bearer ${TOKEN}" | jq
+```
+
+You should see the email that you passed in as one of the values.
