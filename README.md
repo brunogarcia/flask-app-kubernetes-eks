@@ -28,12 +28,38 @@ The app relies on a secret set as the environment variable `JWT_SECRET` to produ
 
 Completing the project involves several steps:
 
-1. Write a Dockerfile for a simple Flask API
-2. Build and test the container locally
-3. Create an EKS cluster
-4. Store a secret using AWS Parameter Store
-5. Create a CodePipeline pipeline triggered by GitHub checkins
-6. Create a CodeBuild stage which will build, test, and deploy your code
+### Write a Dockerfile for a simple Flask API
+
+```shell
+FROM python:stretch
+
+COPY . /app
+WORKDIR /app
+
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+
+ENTRYPOINT ["gunicorn", "-b", ":8080", "main:APP"]
+```
+
+### Create a env_file
+
+```shell
+JWT_SECRET=myjwtsecret
+LOG_LEVEL=DEBUG
+```
+
+### Build and test the container locally
+
+```shell
+sudo docker build -t jwt-api-test .
+sudo docker run -p 80:8080 jwt-api-test
+```
+
+### Create an EKS cluster
+### Store a secret using AWS Parameter Store
+### Create a CodePipeline pipeline triggered by GitHub checkins
+### Create a CodeBuild stage which will build, test, and deploy your code
 
 For more detail about each of these steps, see the project lesson [here](https://classroom.udacity.com/nanodegrees/nd004/parts/1d842ebf-5b10-4749-9e5e-ef28fe98f173/modules/ac13842f-c841-4c1a-b284-b47899f4613d/lessons/becb2dac-c108-4143-8f6c-11b30413e28d/concepts/092cdb35-28f7-4145-b6e6-6278b8dd7527).
 
